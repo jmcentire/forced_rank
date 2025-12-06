@@ -1,3 +1,17 @@
+"""
+Core simulation engine for forced ranking analysis.
+
+This module implements agent-based simulation of forced distribution
+performance management systems, demonstrating systematic classification
+errors that emerge from evaluating global populations using local frames.
+"""
+
+import numpy as np
+import pandas as pd
+from typing import Dict, Optional, Literal
+from scipy.stats import percentileofscore
+
+
 class Simulation:
     """
     Agent-based simulation of forced ranking system.
