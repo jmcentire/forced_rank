@@ -85,45 +85,46 @@ class Simulation:
             raise ValueError(f"Unknown distribution: {self.distribution}")
         
         return talents
-    
+
     def assign_teams(self, talents: np.ndarray) -> np.ndarray:
-        """
-        Assign employees to teams based on clustering strength.
+    """
+    Assign employees to teams based on clustering strength.
+    
+    For biased assignment (clustering_strength > 0), uses hierarchical
+    normal model matching the paper methodology:
+    - Team means ~ N(0, σ_team)
+    - Team members ~ N(team_mean, σ_within)
+    - Where σ_team² + σ_within² = 1
+    
+    Args:
+        talents: Array of talent values (not used for biased assignment)
         
-        Args:
-            talents: Array of talent values
-            
-        Returns:
-            Array of team IDs for each employee
-        """
-        if self.clustering_strength == 0.0:
-            # Random assignment (no clustering)
-            team_ids = np.arange(self.num_employees) // self.team_size
-            return team_ids
-        
-        # Sort employees by talent (best to worst)
-        sorted_indices = np.argsort(talents)[::-1]
-        
-        # Assign teams based on sorted order (best → Team 0, worst → Team N-1)
-        perfect_teams = np.arange(self.num_employees) // self.team_size
-        
-        # Add noise based on clustering strength
-        noise_fraction = 1.0 - self.clustering_strength
-        num_swaps = int(self.num_employees * noise_fraction)
-        
-        team_ids = perfect_teams.copy()
-        if num_swaps > 0:
-            # Randomly swap some assignments
-            swap_indices = np.random.choice(self.num_employees, size=num_swaps, replace=False)
-            swap_values = team_ids[swap_indices].copy()
-            np.random.shuffle(swap_values)
-            team_ids[swap_indices] = swap_values
-        
-        # Map back to original talent order
-        final_team_ids = np.zeros(self.num_employees, dtype=int)
-        final_team_ids[sorted_indices] = team_ids
-        
-        return final_team_ids
+    Returns:
+        Array of team IDs for each employee
+    """
+    if self.clustering_strength == 0.0:
+        # Random assignment (no clustering)
+        team_ids = np.arange(self.num_employees) // self.team_size
+        np.random.shuffle(team_ids)
+        return team_ids
+    
+    # Biased assignment using hierarchical model
+    # Convert clustering_strength to σ_team
+    sigma_team = self.clustering_strength
+    sigma_within = np.sqrt(1.0 - sigma_team**2)
+    
+    # Generate new talents using hierarchical model
+    team_means = np.random.normal(0, sigma_team, self.num_teams)
+    
+    # Assign each employee to a team and generate talent
+    team_ids = np.repeat(np.arange(self.num_teams), self.team_size)[:self.num_employees]
+    
+    # Replace talents with hierarchically-generated values
+    for i in range(self.num_employees):
+        team_mean = team_means[team_ids[i]]
+        self.hierarchical_talents[i] = np.random.normal(team_mean, sigma_within)
+    
+    return team_ids
     
     def run_single(self) -> Dict:
         """
