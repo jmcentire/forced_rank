@@ -176,78 +176,79 @@ class Simulation:
         
         return pd.DataFrame(results)
 
-    def run_simulation(
-        use_bias: bool = False,
-        num_simulations: int = 100,
-        num_employees: int = 994,
-        team_size: int = 7,
-        seed: Optional[int] = None
-    ) -> Dict:
-        """
-        Convenience function to run simulation with standard parameters.
+def run_simulation(
+    use_bias: bool = False,
+    num_simulations: int = 100,
+    num_employees: int = 994,
+    team_size: int = 7,
+    seed: Optional[int] = None
+) -> Dict:
+    """
+    Convenience function to run simulation with standard parameters.
     
-        This matches the methodology from the paper:
-        - Random assignment (use_bias=False): clustering_strength = 0.0
-        - Biased assignment (use_bias=True): clustering_strength = 0.7
+    This matches the methodology from the paper:
+    - Random assignment (use_bias=False): clustering_strength = 0.0
+    - Biased assignment (use_bias=True): clustering_strength = 0.7
     
-        Args:
-            use_bias: Use realistic team clustering (default False)
-            num_simulations: Number of Monte Carlo iterations (default 100)
-            num_employees: Total population (default 994)
-            team_size: Members per team (default 7)
-            seed: Random seed for reproducibility
+    Args:
+        use_bias: Use realistic team clustering (default False)
+        num_simulations: Number of Monte Carlo iterations (default 100)
+        num_employees: Total population (default 994)
+        team_size: Members per team (default 7)
+        seed: Random seed for reproducibility
         
-        Returns:
-            Dictionary with mean results and full DataFrame
-        """
-        clustering = 0.7 if use_bias else 0.0
+    Returns:
+        Dictionary with mean results and full DataFrame
+    """
+    clustering = 0.7 if use_bias else 0.0
     
-        sim = Simulation(
-            num_employees=num_employees,
-            team_size=team_size,
-            distribution='normal',
-            clustering_strength=clustering,
-            cutoff_percentile=0.15
-        )
+    sim = Simulation(
+        num_employees=num_employees,
+        team_size=team_size,
+        distribution='normal',
+        clustering_strength=clustering,
+        cutoff_percentile=0.15
+    )
     
-        results_df = sim.run(num_simulations=num_simulations, seed=seed)
+    results_df = sim.run(num_simulations=num_simulations, seed=seed)
     
-        # Calculate means
-        mean_results = results_df.mean().to_dict()
+    # Calculate means
+    mean_results = results_df.mean().to_dict()
     
-        return {
-            'results_df': results_df,
-            'mean_term_error': mean_results['term_error_rate'],
-            'mean_prom_error': mean_results['prom_error_rate'],
-            'mean_combined_error': (mean_results['term_error_rate'] + mean_results['prom_error_rate']) / 2,
-            'mean_term_correct': mean_results['term_correct'],
-            'mean_prom_correct': mean_results['prom_correct'],
-            'mean_term_false_pos': mean_results['term_false_pos'],
-            'mean_prom_false_pos': mean_results['prom_false_pos'],
-            'mean_term_avg_percentile': mean_results['term_avg_percentile'],
-            'mean_prom_avg_percentile': mean_results['prom_avg_percentile'],
-        }
+    return {
+        'results_df': results_df,
+        'mean_term_error': mean_results['term_error_rate'],
+        'mean_prom_error': mean_results['prom_error_rate'],
+        'mean_combined_error': (mean_results['term_error_rate'] + mean_results['prom_error_rate']) / 2,
+        'mean_term_correct': mean_results['term_correct'],
+        'mean_prom_correct': mean_results['prom_correct'],
+        'mean_term_false_pos': mean_results['term_false_pos'],
+        'mean_prom_false_pos': mean_results['prom_false_pos'],
+        'mean_term_avg_percentile': mean_results['term_avg_percentile'],
+        'mean_prom_avg_percentile': mean_results['prom_avg_percentile'],
+    }
 
-    def print_results(results: Dict, label: str = "Results"):
-        """
-        Print simulation results in readable format.
+
+def print_results(results: Dict, label: str = "Results"):
+    """
+    Print simulation results in readable format.
     
-        Args:
-            results: Dictionary from run_simulation()
-            label: Label for this result set
-        """
-        print("="*80)
-        print(f"{label}")
-        print("="*80)
-        print(f"\nTERMINATIONS:")
-        print(f"  Correct:            {results['mean_term_correct']:.0f} ({(1-results['mean_term_error'])*100:.0f}%)")
-        print(f"  False Positives:    {results['mean_term_false_pos']:.0f} ({results['mean_term_error']*100:.0f}%)")
-        print(f"  Avg Percentile:     {results['mean_term_avg_percentile']:.1f}")
+    Args:
+        results: Dictionary from run_simulation()
+        label: Label for this result set
+    """
+    print("="*80)
+    print(f"{label}")
+    print("="*80)
+    print(f"\nTERMINATIONS:")
+    print(f"  Correct:            {results['mean_term_correct']:.0f} ({(1-results['mean_term_error'])*100:.0f}%)")
+    print(f"  False Positives:    {results['mean_term_false_pos']:.0f} ({results['mean_term_error']*100:.0f}%)")
+    print(f"  Avg Percentile:     {results['mean_term_avg_percentile']:.1f}")
     
-        print(f"\nPROMOTIONS:")
-        print(f"  Correct:            {results['mean_prom_correct']:.0f} ({(1-results['mean_prom_error'])*100:.0f}%)")
-        print(f"  False Positives:    {results['mean_prom_false_pos']:.0f} ({results['mean_prom_error']*100:.0f}%)")
-        print(f"  Avg Percentile:     {results['mean_prom_avg_percentile']:.1f}")
+    print(f"\nPROMOTIONS:")
+    print(f"  Correct:            {results['mean_prom_correct']:.0f} ({(1-results['mean_prom_error'])*100:.0f}%)")
+    print(f"  False Positives:    {results['mean_prom_false_pos']:.0f} ({results['mean_prom_error']*100:.0f}%)")
+    print(f"  Avg Percentile:     {results['mean_prom_avg_percentile']:.1f}")
     
-        print(f"\nCOMBINED ERROR RATE: {results['mean_combined_error']*100:.0f}%")
-        print()
+    print(f"\nCOMBINED ERROR RATE: {results['mean_combined_error']*100:.0f}%")
+    print()
