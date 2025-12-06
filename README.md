@@ -252,7 +252,7 @@ McEntire, J. (2025). The Cage and the Mirror: Engineering Capability Within
 Organizational Constraints. Self-published.
 
 McEntire, J. (2025). Forced Ranking Simulation [Software]. 
-GitHub: https://github.com/yourusername/forced_rank
+GitHub: https://github.com/jmcentire/forced_rank
 ```
 
 ## Contributing
