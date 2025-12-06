@@ -294,9 +294,9 @@ For complete documentation, datasets, and analysis:
 
 Questions, comments, or collaboration inquiries:
 - **Author:** Jeremy McEntire
-- **Email:** [your-email]
+- **Email:** [jmc@cageandmirror.com](mailto:jmc@cageandmirror.com)
 - **Website:** [cageandmirror.com](https://cageandmirror.com)
-- **LinkedIn:** [your-linkedin]
+- **LinkedIn:** [LinkedIn](https://www.linkedin.com/in/jandrewmcentire/)
 
 ## Acknowledgments
 
