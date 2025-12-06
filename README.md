@@ -37,7 +37,7 @@ The system assumes that small teams are representative samples of the company's 
 ### Setup
 
 ```bash
-git clone https://github.com/yourusername/forced_rank.git
+git clone https://github.com/jmcentire/forced_rank.git
 cd forced_rank
 pip install -r requirements.txt
 ```
